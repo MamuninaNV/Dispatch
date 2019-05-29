@@ -161,14 +161,14 @@ public extension Dispatch {
   //MARK: - Static methods
 
   @discardableResult
-  public static func async(_ queue: DispatchQueue, closure: @escaping DispatchClosure) -> Dispatch {
+  static func async(_ queue: DispatchQueue, closure: @escaping DispatchClosure) -> Dispatch {
     let dispatch = Dispatch(closure)
     queue.async(execute: dispatch.currentItem)
     return dispatch
   }
 
   @discardableResult
-  public static func sync(_ queue: DispatchQueue, closure: @escaping DispatchClosure) -> Dispatch {
+  static func sync(_ queue: DispatchQueue, closure: @escaping DispatchClosure) -> Dispatch {
     let dispatch = Dispatch(closure)
     if (queue == Queue.main) && Thread.isMainThread {
       dispatch.currentItem.perform()
@@ -179,12 +179,12 @@ public extension Dispatch {
   }
 
   @discardableResult
-  public static func after(_ time: TimeInterval, closure: @escaping DispatchClosure) -> Dispatch {
+  static func after(_ time: TimeInterval, closure: @escaping DispatchClosure) -> Dispatch {
     return after(time, queue: Queue.main, closure: closure)
   }
 
   @discardableResult
-  public static func after(_ time: TimeInterval, queue: DispatchQueue, closure: @escaping DispatchClosure) -> Dispatch {
+  static func after(_ time: TimeInterval, queue: DispatchQueue, closure: @escaping DispatchClosure) -> Dispatch {
     let dispatch = Dispatch(closure)
     queue.asyncAfter(deadline: DispatchTime.now() + Double(getTimeout(time)) / Double(NSEC_PER_SEC), execute: dispatch.currentItem)
     return dispatch
@@ -193,22 +193,22 @@ public extension Dispatch {
   //MARK: - Instance methods
 
   @discardableResult
-  public func async(_ queue: DispatchQueue, closure: @escaping DispatchClosure) -> Dispatch {
+  func async(_ queue: DispatchQueue, closure: @escaping DispatchClosure) -> Dispatch {
     return chainClosure(queue: queue, closure: closure)
   }
 
   @discardableResult
-  public func after(_ time: TimeInterval, closure: @escaping DispatchClosure) -> Dispatch {
+  func after(_ time: TimeInterval, closure: @escaping DispatchClosure) -> Dispatch {
     return after(time, queue: Queue.main, closure: closure)
   }
 
   @discardableResult
-  public func after(_ time: TimeInterval, queue: DispatchQueue, closure: @escaping DispatchClosure) -> Dispatch {
+  func after(_ time: TimeInterval, queue: DispatchQueue, closure: @escaping DispatchClosure) -> Dispatch {
     return chainClosure(time, queue: queue, closure: closure)
   }
 
   @discardableResult
-  public func sync(_ queue: DispatchQueue, closure: @escaping DispatchClosure) -> Dispatch {
+  func sync(_ queue: DispatchQueue, closure: @escaping DispatchClosure) -> Dispatch {
     let syncWrapper: DispatchClosure = {
       queue.sync(execute: closure)
     }
@@ -237,29 +237,29 @@ public extension Dispatch {
 
 public extension Dispatch {
 
-  public static func barrierAsync(_ queue: DispatchQueue, closure: @escaping DispatchClosure) {
+  static func barrierAsync(_ queue: DispatchQueue, closure: @escaping DispatchClosure) {
     queue.async(flags: .barrier, execute: closure)
   }
 
-  public static func barrierSync(_ queue: DispatchQueue, closure: DispatchClosure) {
+  static func barrierSync(_ queue: DispatchQueue, closure: DispatchClosure) {
     queue.sync(flags: .barrier, execute: closure)
   }
 
-  public static func apply(_ iterations: Int, queue: DispatchQueue, closure: @escaping DispatchApplyClosure) {
+  static func apply(_ iterations: Int, queue: DispatchQueue, closure: @escaping DispatchApplyClosure) {
     queue.async {
         DispatchQueue.concurrentPerform(iterations: iterations, execute: closure)
     }
   }
 
-  public static func time(_ timeout: TimeInterval) -> DispatchTime {
+  static func time(_ timeout: TimeInterval) -> DispatchTime {
     return dispatchTimeCalc(timeout)
   }
 
-  public static var group: Group {
+  static var group: Group {
     return Group()
   }
 
-  public static func semaphore(_ value: Int = 0) -> Semaphore {
+  static func semaphore(_ value: Int = 0) -> Semaphore {
     return Semaphore(value: value)
   }
 
@@ -268,17 +268,17 @@ public extension Dispatch {
 //MARK: - Block methods
 
 public extension Dispatch {
-  public func cancel() {
+  func cancel() {
     currentItem.cancel()
   }
 
   @discardableResult
-  public func wait() -> DispatchTimeoutResult {
+  func wait() -> DispatchTimeoutResult {
     return currentItem.wait(timeout: DispatchTime.distantFuture)
   }
 
   @discardableResult
-  public func wait(_ timeout: TimeInterval) -> DispatchTimeoutResult {
+  func wait(_ timeout: TimeInterval) -> DispatchTimeoutResult {
     return currentItem.wait(timeout: dispatchTimeCalc(timeout))
   }
 }
